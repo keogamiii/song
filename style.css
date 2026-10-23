@@ -1,0 +1,653 @@
+/* палитра и размеры */
+:root {
+    --bg: #07070a;
+    --fg: #f6f6f8;
+    --dim: rgba(246, 246, 248, 0.32);
+    --mid: rgba(246, 246, 248, 0.62);
+    --accent: #ffdb4d;       /* жёлтый, как в Яндекс Музыке */
+    --line: rgba(255, 255, 255, 0.08);
+    --pad: clamp(20px, 4vw, 44px);
+    --radius: 18px;
+    --ease: cubic-bezier(0.22, 0.9, 0.25, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- фон ---------- */
+
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.bg__blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.6;
+    animation: drift 16s var(--ease) infinite alternate, glow 9s ease-in-out infinite alternate;
+}
+
+.bg__blob--one {
+    width: 70vmax;
+    height: 70vmax;
+    left: -25vmax;
+    top: -20vmax;
+    background: radial-gradient(circle, #7b3cff 0%, rgba(123, 60, 255, 0) 70%);
+    animation-duration: 17s, 11s;
+}
+
+.bg__blob--two {
+    width: 62vmax;
+    height: 62vmax;
+    right: -20vmax;
+    top: 8vmax;
+    background: radial-gradient(circle, #ff2d6f 0%, rgba(255, 45, 111, 0) 70%);
+    animation-duration: 13s, 8s;
+    animation-delay: -6s, -2s;
+}
+
+.bg__blob--three {
+    width: 58vmax;
+    height: 58vmax;
+    left: 8vmax;
+    bottom: -24vmax;
+    background: radial-gradient(circle, #2f6bff 0%, rgba(47, 107, 255, 0) 70%);
+    animation-duration: 15s, 12s;
+    animation-delay: -9s, -5s;
+}
+
+.bg__blob--four {
+    width: 48vmax;
+    height: 48vmax;
+    right: -12vmax;
+    bottom: -16vmax;
+    background: radial-gradient(circle, #00e0c6 0%, rgba(0, 224, 198, 0) 70%);
+    animation-duration: 19s, 10s;
+    animation-delay: -4s, -7s;
+}
+
+/* тёплое пятно — чтобы палитра не была только холодной */
+.bg__blob--five {
+    width: 42vmax;
+    height: 42vmax;
+    left: 22vmax;
+    top: 18vmax;
+    background: radial-gradient(circle, #ff9d2d 0%, rgba(255, 157, 45, 0) 70%);
+    opacity: 0.4;
+    animation-duration: 21s, 14s;
+    animation-delay: -12s, -4s;
+}
+
+/* вращающееся пятно — из-за него цвета перетекают друг в друга */
+.bg__aurora {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 140vmax;
+    height: 140vmax;
+    margin: -70vmax 0 0 -70vmax;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        rgba(123, 60, 255, 0.62) 0deg,
+        rgba(255, 45, 111, 0.5) 70deg,
+        rgba(47, 107, 255, 0.56) 150deg,
+        rgba(0, 224, 198, 0.42) 230deg,
+        rgba(255, 157, 45, 0.3) 300deg,
+        rgba(123, 60, 255, 0.62) 360deg
+    );
+    filter: blur(60px);
+    opacity: 0.55;
+    animation: spin 22s linear infinite, glow 12s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+
+/* вспышка на бас — прозрачность считается из --beat, которую ставит js */
+.bg__beat {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 58%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 45, 111, 0.16) 36%, rgba(0, 0, 0, 0) 72%);
+    opacity: calc(var(--beat, 0) * 0.9);
+    mix-blend-mode: screen;
+}
+
+/* лёгкий «толчок» всей подложки на бит */
+.bg {
+    transform: scale(calc(1 + var(--beat, 0) * 0.03));
+}
+
+/* лёгкое зерно, чтобы градиенты не выглядели пластиковыми */
+.bg__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(6vmax, 9vmax, 0) scale(1.22); }
+}
+
+@keyframes glow {
+    from { opacity: 0.12; }
+    to   { opacity: 0.95; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* та же пульсация, но с более широкой амплитудой — для авроры */
+@keyframes auroraGlow {
+    from { opacity: 0.22; }
+    to   { opacity: 0.72; }
+}
+
+/* ---------- каркас: слева плеер, справа текст ---------- */
+
+.app {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    height: 100dvh;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: calc(var(--pad) + env(safe-area-inset-top)) var(--pad) calc(var(--pad) + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: minmax(200px, 320px) minmax(0, 360px);
+    justify-content: center;
+    gap: clamp(28px, 5vw, 72px);
+    align-items: stretch;
+}
+
+/* ---------- левая колонка ---------- */
+
+.side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(14px, 2.4vh, 22px);
+    min-width: 0;
+}
+
+.side__top {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.cover {
+    position: relative;
+    /* на десктопе обложка во всю ширину колонки, но не выше экрана */
+    width: min(100%, 50vh);
+    aspect-ratio: 1;
+    border-radius: 20px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    background:
+        radial-gradient(circle at 30% 25%, #ff5c8a 0%, rgba(255, 92, 138, 0) 60%),
+        radial-gradient(circle at 75% 80%, #5b2dff 0%, rgba(91, 45, 255, 0) 65%),
+        linear-gradient(150deg, #1b1030 0%, #0a0a12 100%);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.6);
+}
+
+.cover__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.track__title {
+    font-size: clamp(22px, 2.2vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.track__artist {
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--mid);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* ---------- полоса проигрывания ---------- */
+
+.progress {
+    position: relative;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    touch-action: none;
+}
+
+.progress::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--line);
+}
+
+.progress__fill {
+    position: absolute;
+    left: 0;
+    height: 3px;
+    width: 0;
+    border-radius: 3px;
+    background: var(--accent);
+}
+
+.progress__dot {
+    position: absolute;
+    left: 0;
+    width: 11px;
+    height: 11px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.progress:hover .progress__dot,
+.progress:focus-visible .progress__dot,
+.progress--seek .progress__dot {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.side__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.player__time {
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--mid);
+}
+
+.player__play {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #14100a;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 0.18s var(--ease), box-shadow 0.25s var(--ease);
+    box-shadow: 0 8px 26px rgba(255, 219, 77, 0.28);
+    flex: 0 0 auto;
+}
+
+.player__play:active {
+    transform: scale(0.94);
+}
+
+.player__play:focus-visible,
+.lyr-toggle:focus-visible,
+.progress:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+
+.icon {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+}
+
+.icon__pause {
+    display: none;
+}
+
+.is-playing .icon__play {
+    display: none;
+}
+
+.is-playing .icon__pause {
+    display: block;
+}
+
+/* если что-то не так с файлом — тихо скажем под плеером */
+.hint {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #ff9aa9;
+    text-align: center;
+}
+
+/* кнопка «текст» — только на телефоне, на десктопе текст и так рядом */
+.lyr-toggle {
+    position: absolute;
+    z-index: 5;
+    top: calc(env(safe-area-inset-top) + 10px);
+    right: calc(var(--pad) - 6px);
+    display: none;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: var(--fg);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.lyr-toggle__icon {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.lyr-toggle[aria-pressed="true"] {
+    background: rgba(255, 219, 77, 0.16);
+    border-color: rgba(255, 219, 77, 0.4);
+    color: var(--accent);
+}
+
+/* ---------- текст песни ---------- */
+
+.lyrics {
+    position: relative;
+    max-width: 360px;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    /* сверху и снизу текст растворяется — как в плеере */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 84%, transparent 100%);
+}
+
+.lyrics__list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2.6vh, 24px);
+    transition: transform 0.62s var(--ease);
+    will-change: transform;
+}
+
+.line {
+    font-size: clamp(19px, 2.9vh, 29px);
+    font-weight: 700;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    color: var(--dim);
+    /* будущие строки ещё не появились */
+    opacity: 0;
+    transform-origin: left center;
+    transition: color 0.4s var(--ease), opacity 0.45s var(--ease), transform 0.5s var(--ease);
+    cursor: pointer;
+    text-wrap: balance;
+}
+
+/* до старта песни текст виден целиком — это как «предисловие»,
+   а с первым звуком остаются только спетые строки и текущая */
+body:not(.lyrics-live) .line {
+    opacity: 1;
+}
+
+/* следующая строка еле виднеется, чтобы было понятно — текст идёт */
+.line--next {
+    opacity: 0.16;
+}
+
+.line--done {
+    color: rgba(246, 246, 248, 0.42);
+    opacity: 1;
+}
+
+.line--active {
+    color: var(--fg);
+    opacity: 1;
+    text-shadow: 0 0 28px rgba(255, 255, 255, 0.18);
+    animation: lineIn 0.6s var(--ease);
+}
+
+/* строка выплывает из размытия — появление, как в плеере */
+@keyframes lineIn {
+    from {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translateY(18px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: none;
+    }
+}
+
+@keyframes lineInQuiet {
+    from {
+        opacity: 0;
+        filter: blur(7px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* ---------- телефон: сначала большая обложка и плеер ---------- */
+
+@media (max-width: 640px) {
+    .app {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) 0;
+        gap: 0;
+    }
+
+    .lyr-toggle {
+        display: inline-flex;
+    }
+
+    .side {
+        gap: clamp(14px, 2.6vh, 22px);
+    }
+
+    /* пока текст закрыт — обложка крупная и всё по центру */
+    .side__top {
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(16px, 3vh, 24px);
+        text-align: center;
+    }
+
+    .cover {
+        width: min(66vw, 280px);
+        border-radius: 24px;
+        box-shadow: 0 26px 64px rgba(0, 0, 0, 0.65);
+        transition: width 0.45s var(--ease), border-radius 0.45s var(--ease);
+    }
+
+    .track__title {
+        font-size: 26px;
+        transition: font-size 0.35s var(--ease);
+    }
+
+    .track__artist {
+        margin-top: 4px;
+    }
+
+    .lyrics {
+        max-width: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s var(--ease), visibility 0.4s;
+    }
+
+    .line {
+        font-size: clamp(20px, 6vw, 30px);
+    }
+
+    /* открыли/закрыли — блок просто проявляется, а строки живут своей жизнью */
+
+    /* закрываем: видимые строки уезжают вниз, а место схлопывается чуть позже (это в js) */
+    body.lyrics-closing .line {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+        transition-duration: 0.4s, 0.3s, 0.3s;
+    }
+
+    body.lyrics-closing .lyrics {
+        opacity: 0;
+        transition-duration: 0.25s;
+    }
+
+    /* текст открыт: обложка сжимается в шапку, снизу текст */
+    body.lyrics-open .app {
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: clamp(14px, 2.6vh, 24px);
+    }
+
+    body.lyrics-open .side {
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    body.lyrics-open .side__top {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        text-align: left;
+    }
+
+    body.lyrics-open .cover {
+        width: 64px;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    body.lyrics-open .track__title {
+        font-size: 20px;
+    }
+
+    body.lyrics-open .player__play {
+        width: 50px;
+        height: 50px;
+    }
+
+    body.lyrics-open .lyrics {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* ---------- мало по высоте (ландшафт телефона) ---------- */
+
+@media (max-height: 520px) {
+    .app {
+        gap: 18px;
+    }
+
+    .cover {
+        width: min(100%, 36vh);
+    }
+
+    .line {
+        font-size: clamp(16px, 4vh, 22px);
+    }
+
+    .progress {
+        height: 20px;
+    }
+}
+
+/* если человек попросил меньше движения — убираем беготню, но оставляем живой цвет */
+@media (prefers-reduced-motion: reduce) {
+    .bg__blob {
+        animation: glow 9s ease-in-out infinite alternate;
+    }
+
+    .bg__blob--one { animation-duration: 9s; }
+    .bg__blob--two { animation-duration: 6.5s; animation-delay: -2s; }
+    .bg__blob--three { animation-duration: 8s; animation-delay: -4s; }
+    .bg__blob--four { animation-duration: 11s; animation-delay: -6s; }
+    .bg__blob--five { animation-duration: 7.5s; animation-delay: -3s; }
+
+    /* аврора не крутится, но дышит — цвета всё равно переливаются */
+    .bg__aurora {
+        animation: auroraGlow 10s ease-in-out infinite alternate;
+    }
+
+    .lyrics__list {
+        transition-duration: 0.2s;
+    }
+
+    .cover,
+    .track__title {
+        transition-duration: 0.2s;
+    }
+
+    .line {
+        transition-duration: 0.25s;
+    }
+
+    .line--active {
+        animation-name: lineInQuiet;
+        animation-duration: 0.5s;
+    }
+
+    /* без сдвигов: строка просто проявляется из размытия */
+    body.lyrics-closing .line {
+        transform: none;
+    }
+
+    /* фон не толкается, только вспыхивает */
+    .bg {
+        transform: none;
+    }
+
+    .lyrics {
+        transition-duration: 0.2s;
+    }
+}

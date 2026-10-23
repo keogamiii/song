@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Roman — для тебя</title>
+    <meta name="description" content="Одна песня и слова, которые идут вместе с ней.">
+    <meta name="theme-color" content="#07070a">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Cpath%20fill='%23ff4d6d'%20d='M16%2028S3%2019.5%203%2011a7%207%200%200%201%2013-3.5A7%207%200%200%201%2029%2011c0%208.5-13%2017-13%2017z'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- фон: переливающиеся размытые пятна под обложку -->
+    <div class="bg" aria-hidden="true">
+        <span class="bg__aurora"></span>
+        <span class="bg__blob bg__blob--one"></span>
+        <span class="bg__blob bg__blob--two"></span>
+        <span class="bg__blob bg__blob--three"></span>
+        <span class="bg__blob bg__blob--four"></span>
+        <span class="bg__blob bg__blob--five"></span>
+        <span class="bg__beat"></span>
+        <span class="bg__grain"></span>
+    </div>
+
+    <main class="app">
+
+        <!-- на телефоне открывает и закрывает текст -->
+        <button class="lyr-toggle" id="lyr-toggle" type="button" aria-pressed="false" aria-controls="lyrics">
+            <svg class="lyr-toggle__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h10"/>
+            </svg>
+            <span class="lyr-toggle__label">Текст</span>
+        </button>
+
+        <!-- слева: обложка, трек и полоса проигрывания -->
+        <aside class="side">
+            <div class="side__top">
+                <div class="cover">
+                    <img class="cover__img" src="obl.jpg" alt="Обложка трека" onerror="this.remove()">
+                </div>
+                <div class="track__meta">
+                    <h1 class="track__title">Roman</h1>
+                    <p class="track__artist">NEWLIGHTCHILD</p>
+                </div>
+            </div>
+
+            <div class="progress" id="progress" role="slider" aria-label="Перемотка" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                <div class="progress__fill" id="fill"></div>
+                <div class="progress__dot" id="dot"></div>
+            </div>
+
+            <div class="side__row">
+                <span class="player__time" id="time-now">0:00</span>
+                <button class="player__play" id="play" type="button" aria-label="Включить">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="icon__play" d="M8 5.5v13l11-6.5z"/>
+                        <path class="icon__pause" d="M7 5h4v14H7zm6 0h4v14h-4z"/>
+                    </svg>
+                </button>
+                <span class="player__time" id="time-all">1:42</span>
+            </div>
+
+            <p class="hint" id="hint" hidden></p>
+        </aside>
+
+        <!-- справа (на телефоне — по кнопке): текст, который едет по времени -->
+        <section class="lyrics" id="lyrics" aria-label="Текст песни">
+            <div class="lyrics__list" id="lines"></div>
+        </section>
+
+    </main>
+
+    <audio id="audio" src="song.mp3" preload="auto"></audio>
+
+    <script src="lyrics.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

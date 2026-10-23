@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>превью телефона</title>
+    <style>
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: #14141a;
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, "Segoe UI", sans-serif;
+            color: #8b8b96;
+        }
+        figure { margin: 0; text-align: center; }
+        .wrap {
+            width: 312px;
+            height: 675px;
+            overflow: hidden;
+            border-radius: 22px;
+            background: #000;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
+        }
+        iframe {
+            width: 390px;
+            height: 844px;
+            border: 0;
+            display: block;
+            transform: scale(0.8);
+            transform-origin: top left;
+        }
+        figcaption {
+            margin-top: 12px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <figure>
+        <div class="wrap"><iframe id="f1" src="./?p=1"></iframe></div>
+        <figcaption>закрытый текст</figcaption>
+    </figure>
+
+    <figure>
+        <div class="wrap"><iframe id="f2" src="./?p=2"></iframe></div>
+        <figcaption>текст открыт</figcaption>
+    </figure>
+
+    <script>
+        // второй «телефон» — с открытым текстом и перемоткой
+        function prep(frame, open, time) {
+            var d = frame.contentDocument;
+            if (open && !d.body.classList.contains('lyrics-open')) {
+                d.getElementById('lyr-toggle').click();
+            }
+            d.getElementById('audio').currentTime = time;
+        }
+
+        window.__ready = false;
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                try {
+                    prep(document.getElementById('f1'), false, 24);
+                    prep(document.getElementById('f2'), true, 24);
+                } catch (e) {}
+                window.__ready = true;
+            }, 900);
+        });
+    </script>
+
+</body>
+</html>
